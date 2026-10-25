@@ -1,0 +1,136 @@
+CLOUDLINE / CLOUDPAYX — GODFRED API HANDOFF REVIEW
+Generated: 2026-10-24T21:04:26
+
+STATUS: SOURCE REVIEW ONLY — NOT A PUBLIC API DEPLOYMENT
+Never share wallet seeds, private keys, .env files, or credentials.
+
+=================================================================
+FILE: action_gate.py
+=================================================================
+
+=================================================================
+FILE: agent_sessions.py
+=================================================================
+
+=================================================================
+FILE: agreement_verifier.py
+=================================================================
+
+=================================================================
+FILE: autonomous_negotiation.py
+=================================================================
+
+=================================================================
+FILE: conversation_bridge.py
+=================================================================
+
+=================================================================
+FILE: cpx_registry.py
+=================================================================
+FUNCTION handle_get(handler, path) line 51
+FUNCTION handle_post(handler) line 62
+ROUTE/REFERENCE line 52: if path not in ("/api/cpx/agents", "/api/cpx/wallets"):
+ROUTE/REFERENCE line 63: if handler.path not in ("/api/cpx/agents", "/api/cpx/wallets"):
+
+=================================================================
+FILE: demo_negotiation.py
+=================================================================
+
+=================================================================
+FILE: demo_visual_runner.py
+=================================================================
+
+=================================================================
+FILE: mandate_store.py
+=================================================================
+FUNCTION get(self, room_id, address) line 90
+
+=================================================================
+FILE: mandates.py
+=================================================================
+FUNCTION __post_init__(self) line 14
+
+=================================================================
+FILE: negotiation.py
+=================================================================
+FUNCTION get(self, offer_id) line 133
+FUNCTION accept(self, room_id, actor, offer_id, expected_hash) line 149
+
+=================================================================
+FILE: negotiation_runner.py
+=================================================================
+
+=================================================================
+FILE: room_admission.py
+=================================================================
+FUNCTION verify(self, room_id, address, challenge_id, signature) line 73
+
+=================================================================
+FILE: room_core.py
+=================================================================
+FUNCTION request_room(self, buyer, seller, purpose) line 31
+FUNCTION get_room(self, room_id) line 66
+
+=================================================================
+FILE: server.backup-20261024-132415.py
+=================================================================
+FUNCTION do_GET(self) line 26
+FUNCTION do_POST(self) line 54
+ROUTE/REFERENCE line 30: if path.startswith("/api/rooms/"):
+ROUTE/REFERENCE line 31: room_id = path.removeprefix("/api/rooms/")
+ROUTE/REFERENCE line 59: if self.path != "/api/rooms":
+
+=================================================================
+FILE: server.before-http-admission-20261024T192103Z.py
+=================================================================
+FUNCTION do_GET(self) line 26
+FUNCTION do_POST(self) line 94
+ROUTE/REFERENCE line 30: if path.startswith("/api/rooms/") and path.endswith("/negotiation"):
+ROUTE/REFERENCE line 31: room_id = path[len("/api/rooms/"):-len("/negotiation")].rstrip("/")
+ROUTE/REFERENCE line 61: if path.startswith("/api/rooms/"):
+ROUTE/REFERENCE line 62: room_id = path.removeprefix("/api/rooms/")
+ROUTE/REFERENCE line 99: if self.path != "/api/rooms":
+
+=================================================================
+FILE: server.before-negotiation-20261024T191033Z.py
+=================================================================
+FUNCTION do_GET(self) line 26
+FUNCTION do_POST(self) line 63
+ROUTE/REFERENCE line 30: if path.startswith("/api/rooms/"):
+ROUTE/REFERENCE line 31: room_id = path.removeprefix("/api/rooms/")
+ROUTE/REFERENCE line 68: if self.path != "/api/rooms":
+
+=================================================================
+FILE: server.before-transparent-logo.py
+=================================================================
+FUNCTION do_GET(self) line 26
+FUNCTION do_POST(self) line 63
+ROUTE/REFERENCE line 30: if path.startswith("/api/rooms/"):
+ROUTE/REFERENCE line 31: room_id = path.removeprefix("/api/rooms/")
+ROUTE/REFERENCE line 68: if self.path != "/api/rooms":
+
+=================================================================
+FILE: server.py
+=================================================================
+FUNCTION do_GET(self) line 35
+FUNCTION do_POST(self) line 105
+ROUTE/REFERENCE line 41: if path.startswith("/api/rooms/") and path.endswith("/negotiation"):
+ROUTE/REFERENCE line 42: room_id = path[len("/api/rooms/"):-len("/negotiation")].rstrip("/")
+ROUTE/REFERENCE line 72: if path.startswith("/api/rooms/"):
+ROUTE/REFERENCE line 73: room_id = path.removeprefix("/api/rooms/")
+ROUTE/REFERENCE line 113: "/api/rooms",
+ROUTE/REFERENCE line 114: "/api/admission/challenge",
+ROUTE/REFERENCE line 115: "/api/admission/verify",
+ROUTE/REFERENCE line 116: "/api/mandates",
+ROUTE/REFERENCE line 117: "/api/negotiation/offer",
+ROUTE/REFERENCE line 118: "/api/negotiation/accept"
+ROUTE/REFERENCE line 130: if self.path == "/api/admission/challenge":
+ROUTE/REFERENCE line 137: if self.path == "/api/admission/verify":
+ROUTE/REFERENCE line 151: if self.path == "/api/mandates":
+ROUTE/REFERENCE line 165: if self.path == "/api/negotiation/offer":
+ROUTE/REFERENCE line 187: if self.path == "/api/negotiation/accept":
+
+=================================================================
+FILE: wallet_identity.py
+=================================================================
+FUNCTION verify_wallet_signature(address, message, signature) line 11

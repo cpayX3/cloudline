@@ -1,0 +1,77 @@
+"""Deterministic autonomous negotiation within registered mandates."""
+
+from mandates import evaluate
+
+
+def plan(buyer, seller):
+    result = evaluate(buyer, seller)
+
+    if not result["agreement_possible"]:
+        return {
+            "status": "NO_AGREEMENT",
+            "reason": "HARD_LIMITS_DO_NOT_OVERLAP",
+            "steps": [],
+            "payment_authority": "NOT_GRANTED"
+        }
+
+    low = seller.limit_units
+    high = buyer.limit_units
+
+    buyer_price = min(max(buyer.target_units, low), high)
+    seller_price = min(max(seller.target_units, low), high)
+
+    steps = []
+
+    steps.append({
+        "actor": "buyer",
+        "action": "PROPOSAL",
+        "amount_units": buyer_price
+    })
+
+    if buyer_price >= seller.target_units:
+        final_price = buyer_price
+    elif seller_price <= buyer_price:
+        final_price = buyer_price
+    else:
+        steps.append({
+            "actor": "seller",
+            "action": "COUNTEROFFER",
+            "amount_units": seller_price
+        })
+
+        final_price = min(
+            high,
+            max(low, (buyer_price + seller_price + 1) // 2)
+        )
+
+        if final_price != seller_price:
+            steps.append({
+                "actor": "buyer",
+                "action": "COUNTEROFFER",
+                "amount_units": final_price
+            })
+
+    if not buyer.permits(final_price):
+        raise AssertionError("BUYER_LIMIT_VIOLATION")
+
+    if not seller.permits(final_price):
+        raise AssertionError("SELLER_LIMIT_VIOLATION")
+
+    steps.append({
+        "actor": "buyer",
+        "action": "ACCEPT",
+        "amount_units": final_price
+    })
+
+    steps.append({
+        "actor": "seller",
+        "action": "ACCEPT",
+        "amount_units": final_price
+    })
+
+    return {
+        "status": "AGREEMENT_POSSIBLE",
+        "amount_units": final_price,
+        "steps": steps,
+        "payment_authority": "NOT_GRANTED"
+    }

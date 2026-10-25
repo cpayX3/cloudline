@@ -1,0 +1,193 @@
+[
+  {
+    "sequence": 1,
+    "at": "2026-10-24T16:28:50.325186+00:00",
+    "kind": "ROOM_REQUESTED",
+    "payload": {
+      "claimed_buyer": "buyer",
+      "claimed_seller": "hunter",
+      "purpose": "Wallet Vibe Check",
+      "identity": "UNVERIFIED",
+      "authority": "UNVERIFIED",
+      "payment_adapter": "mastercard_ap4m",
+      "reason": "Waiting for authenticated admission verification"
+    }
+  },
+  {
+    "sequence": 2,
+    "at": "2026-10-24T16:28:50.326692+00:00",
+    "kind": "QUESTION",
+    "payload": {
+      "original": "Does your wallet report cover stablecoin activity?",
+      "text": "Does your wallet report cover stablecoin activity?",
+      "source_format": "text",
+      "handling": "TEXT_EXTRACTED",
+      "interpretation": "NOT_YET_INTERPRETED",
+      "message_id": "msg_226588e23ac54c2eb85d8ec88ce39185",
+      "sender": "buyer",
+      "action": "ask",
+      "question_id": null
+    }
+  },
+  {
+    "sequence": 3,
+    "at": "2026-10-24T16:28:50.326947+00:00",
+    "kind": "ANSWER",
+    "payload": {
+      "original": "The Wallet Vibe Check includes supported stablecoin activity indicators.",
+      "text": "The Wallet Vibe Check includes supported stablecoin activity indicators.",
+      "source_format": "text",
+      "handling": "TEXT_EXTRACTED",
+      "interpretation": "NOT_YET_INTERPRETED",
+      "message_id": "msg_f7962cd186344945b7092de39325e589",
+      "sender": "hunter",
+      "action": "answer",
+      "question_id": "msg_226588e23ac54c2eb85d8ec88ce39185"
+    }
+  },
+  {
+    "sequence": 4,
+    "at": "2026-10-24T16:28:50.327225+00:00",
+    "kind": "QUESTION_RESOLVED",
+    "payload": {
+      "sender": "buyer",
+      "question_id": "msg_226588e23ac54c2eb85d8ec88ce39185",
+      "answer_id": "msg_f7962cd186344945b7092de39325e589",
+      "text": "Asking participant marked this question resolved."
+    }
+  },
+  {
+    "sequence": 5,
+    "at": "2026-10-24T16:28:50.328234+00:00",
+    "kind": "PROPOSAL",
+    "payload": {
+      "offer_id": "offer_99563b61e3bf441cb4827470dc274c61",
+      "parent_id": null,
+      "proposer": "hunter",
+      "terms": {
+        "amount_units": 100000,
+        "asset": "RLUSD",
+        "expires_at": "2026-10-24T17:28:50.327916+00:00",
+        "network": "xrpl:0",
+        "recipient": "rExampleSeller",
+        "resource": "rExampleWallet",
+        "service": "wallet-vibe-check"
+      },
+      "terms_hash": "9c278c796bb2ba057ccdacc7d2bdf7708ea6da68bb97b5b7d6f4027cc6a5eea9"
+    }
+  },
+  {
+    "sequence": 6,
+    "at": "2026-10-24T16:28:50.328844+00:00",
+    "kind": "COUNTEROFFER",
+    "payload": {
+      "offer_id": "offer_cd551d6e28fe40ab9a163601803845c7",
+      "parent_id": "offer_99563b61e3bf441cb4827470dc274c61",
+      "proposer": "buyer",
+      "terms": {
+        "amount_units": 120000,
+        "asset": "RLUSD",
+        "expires_at": "2026-10-24T17:28:50.327916+00:00",
+        "network": "xrpl:0",
+        "recipient": "rExampleSeller",
+        "resource": "rExampleWallet",
+        "service": "wallet-vibe-check"
+      },
+      "terms_hash": "15a5326eeb0d5acba9fedda659dfb387e4621a21f1a47286729a71f54b0d14b4"
+    }
+  },
+  {
+    "sequence": 7,
+    "at": "2026-10-24T16:28:50.329811+00:00",
+    "kind": "OFFER_ACCEPTED",
+    "payload": {
+      "actor": "hunter",
+      "offer_id": "offer_cd551d6e28fe40ab9a163601803845c7",
+      "terms_hash": "15a5326eeb0d5acba9fedda659dfb387e4621a21f1a47286729a71f54b0d14b4"
+    }
+  },
+  {
+    "sequence": 8,
+    "at": "2026-10-24T16:28:50.330211+00:00",
+    "kind": "OFFER_ACCEPTED",
+    "payload": {
+      "actor": "buyer",
+      "offer_id": "offer_cd551d6e28fe40ab9a163601803845c7",
+      "terms_hash": "15a5326eeb0d5acba9fedda659dfb387e4621a21f1a47286729a71f54b0d14b4"
+    }
+  },
+  {
+    "sequence": 9,
+    "at": "2026-10-24T16:28:50.330260+00:00",
+    "kind": "AGREEMENT_RECORDED",
+    "payload": {
+      "agreement_id": "offer_cd551d6e28fe40ab9a163601803845c7",
+      "authority": "NOT_VERIFIED",
+      "payment": "NOT_SUBMITTED",
+      "terms_hash": "15a5326eeb0d5acba9fedda659dfb387e4621a21f1a47286729a71f54b0d14b4"
+    }
+  },
+  {
+    "sequence": 10,
+    "at": "2026-10-24T16:28:50.330868+00:00",
+    "kind": "ACTION_BLOCKED",
+    "payload": {
+      "action": {
+        "room_id": "room_cfd1534584c14cd0821ff9cb897fd5ed",
+        "actor": "buyer",
+        "agreement_id": "offer_cd551d6e28fe40ab9a163601803845c7",
+        "terms_hash": "15a5326eeb0d5acba9fedda659dfb387e4621a21f1a47286729a71f54b0d14b4",
+        "action": "purchase",
+        "resource": "rExampleWallet",
+        "network": "xrpl:0",
+        "asset": "RLUSD",
+        "recipient": "rExampleSeller",
+        "amount_units": 120000
+      },
+      "reason": "AUTHORITY_VERIFIER_NOT_CONNECTED",
+      "evidence_ref": null
+    }
+  },
+  {
+    "sequence": 11,
+    "at": "2026-10-24T16:28:50.331262+00:00",
+    "kind": "ACTION_AUTHORIZED",
+    "payload": {
+      "action": {
+        "room_id": "room_cfd1534584c14cd0821ff9cb897fd5ed",
+        "actor": "buyer",
+        "agreement_id": "offer_cd551d6e28fe40ab9a163601803845c7",
+        "terms_hash": "15a5326eeb0d5acba9fedda659dfb387e4621a21f1a47286729a71f54b0d14b4",
+        "action": "purchase",
+        "resource": "rExampleWallet",
+        "network": "xrpl:0",
+        "asset": "RLUSD",
+        "recipient": "rExampleSeller",
+        "amount_units": 120000
+      },
+      "reason": "VERIFIED_FOR_EXECUTION",
+      "evidence_ref": "DEMO_ONLY_NOT_MASTERCARD"
+    }
+  },
+  {
+    "sequence": 12,
+    "at": "2026-10-24T16:28:50.331535+00:00",
+    "kind": "ACTION_SUBMITTED",
+    "payload": {
+      "action": {
+        "room_id": "room_cfd1534584c14cd0821ff9cb897fd5ed",
+        "actor": "buyer",
+        "agreement_id": "offer_cd551d6e28fe40ab9a163601803845c7",
+        "terms_hash": "15a5326eeb0d5acba9fedda659dfb387e4621a21f1a47286729a71f54b0d14b4",
+        "action": "purchase",
+        "resource": "rExampleWallet",
+        "network": "xrpl:0",
+        "asset": "RLUSD",
+        "recipient": "rExampleSeller",
+        "amount_units": 120000
+      },
+      "reason": "SETTLEMENT_NOT_YET_VERIFIED",
+      "evidence_ref": null
+    }
+  }
+]

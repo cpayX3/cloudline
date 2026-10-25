@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cloudline | Live Replay</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080d0a;color:#e6f5e9;font-family:Menlo,Monaco,monospace;padding:25px}
+header{display:flex;justify-content:space-between;gap:20px;align-items:center;border-bottom:1px solid #294b36;padding-bottom:22px}
+h1{color:#6aff9e;margin:0;font-size:36px}
+small{color:#86a891}
+button{background:#6aff9e;color:#07120a;border:0;padding:13px 20px;cursor:pointer;font-weight:bold}
+main{display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-top:24px}
+section,aside{background:#101a13;border:1px solid #294b36;padding:22px;border-radius:8px}
+h2{font-size:14px;color:#89ffb1;text-transform:uppercase}
+.event{background:#17261b;border-left:3px solid #4d9662;margin:12px 0;padding:14px;animation:appear .3s ease}
+.event.blocked{border-left-color:#ff6c6c}
+.event.allowed{border-left-color:#6aff9e}
+.kind{font-weight:bold;color:#9bffbc}
+.detail{margin-top:8px;line-height:1.5;font-size:13px;overflow-wrap:anywhere}
+.time{color:#779b83;font-size:11px;margin-top:8px}
+.stat{border-bottom:1px solid #294b36;padding:14px 0}
+.stat strong{display:block;margin-top:6px;color:#fff}
+#status{color:#8bffb1}
+@keyframes appear{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:750px){main{grid-template-columns:1fr}body{padding:12px}}
+</style>
+</head>
+<body>
+<header>
+<div><h1>cloudline_</h1><small>AGENT NEGOTIATION / XRPL CONTROL</small></div>
+<button id="replay">▶ Replay negotiation</button>
+</header>
+<main>
+<section>
+<h2>Negotiation room</h2>
+<p id="status">Loading events...</p>
+<div id="events"></div>
+</section>
+<aside>
+<h2>Transaction evidence</h2>
+<div class="stat">Buyer<strong>buyer</strong></div>
+<div class="stat">Seller<strong>hunter</strong></div>
+<div class="stat">Agreement<strong id="agreement">Pending</strong></div>
+<div class="stat">Authorization<strong id="authority">Not checked</strong></div>
+<div class="stat">Payment<strong id="payment">Not submitted</strong></div>
+<div class="stat">Settlement<strong>Not verified</strong></div>
+<div class="stat">Mode<strong>Local recorded replay</strong></div>
+<p><small>Test credentials only. No live Mastercard verification or XRPL payments.</small></p>
+</aside>
+</main>
+<script>
+let events=[],playing=false;
+const el=id=>document.getElementById(id);
+const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+
+function describe(e){
+const p=e.payload||{};
+switch(e.kind){
+case "ROOM_REQUESTED":return "Room requested for "+(p.purpose||"negotiation");
+case "QUESTION":return (p.sender||"Buyer")+": "+(p.text||"");
+case "ANSWER":return (p.sender||"Seller")+": "+(p.text||"");
+case "QUESTION_RESOLVED":return "Buyer confirmed the question was answered.";
+case "PROPOSAL":
+case "COUNTEROFFER":
+return (p.proposer||"Agent")+" proposes "+(p.terms?.amount_units??"?")+" units of "+(p.terms?.asset||"")+" for "+(p.terms?.service||"");
+case "OFFER_ACCEPTED":return (p.actor||"Agent")+" accepted the proposed terms.";
+case "AGREEMENT_RECORDED":return "Bilateral agreement recorded. Payment is NOT yet authorized.";
+case "ACTION_BLOCKED":return "Transaction blocked: "+(p.reason||"");
+case "ACTION_AUTHORIZED":return "Test-only authority permitted this action.";
+case "ACTION_SUBMITTED":return "Mock payment submitted. No settlement occurred.";
+default:return e.kind;
+}
+}
+
+async function replay(){
+if(playing)return;
+playing=true;
+el("replay").disabled=true;
+el("events").replaceChildren();
+el("agreement").textContent="Pending";
+el("authority").textContent="Not checked";
+el("payment").textContent="Not submitted";
+el("status").textContent="Replaying "+events.length+" events";
+
+for(const e of events){
+const box=document.createElement("div");
+box.className="event "+(e.kind==="ACTION_BLOCKED"?"blocked":e.kind==="ACTION_AUTHORIZED"?"allowed":"");
+const kind=document.createElement("div");
+kind.className="kind";kind.textContent=e.kind;
+const detail=document.createElement("div");
+detail.className="detail";detail.textContent=describe(e);
+const time=document.createElement("div");
+time.className="time";time.textContent="#"+e.sequence+" · "+e.at;
+box.append(kind,detail,time);
+el("events").append(box);
+box.scrollIntoView({behavior:"smooth",block:"nearest"});
+
+if(e.kind==="AGREEMENT_RECORDED")el("agreement").textContent="Accepted by both";
+if(e.kind==="ACTION_BLOCKED")el("authority").textContent="BLOCKED";
+if(e.kind==="ACTION_AUTHORIZED")el("authority").textContent="Test-only approved";
+if(e.kind==="ACTION_SUBMITTED")el("payment").textContent="Mock submission";
+await pause(1100);
+}
+
+el("status").textContent="Replay complete";
+el("replay").disabled=false;
+playing=false;
+}
+
+el("replay").onclick=replay;
+
+fetch("cloudline-events.json",{cache:"no-store"})
+.then(r=>{if(!r.ok)throw Error("Events file missing");return r.json()})
+.then(data=>{events=data;replay()})
+.catch(err=>el("status").textContent=err.message);
+</script>
+</body>
+</html>

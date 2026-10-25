@@ -1,0 +1,889 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cloudline | Negotiation workspace</title>
+<style>
+:root {
+  color-scheme:dark;
+  --bg:#060b08;--panel:#0c1510;--line:#294634;
+  --green:#45ef83;--text:#e0eee3;--muted:#9ab4a2;
+  --amber:#efc477;--red:#fa8585;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:14px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}
+header{border-bottom:1px solid var(--line);padding:18px max(24px,calc((100vw - 1400px)/2))}
+header .brand{font-size:19px;color:var(--green);font-weight:700}
+header a{float:right;color:var(--muted);text-decoration:none}
+main{max-width:1400px;margin:auto;padding:28px 24px 70px}
+h1{font-size:28px;margin:0;color:var(--green)}
+h2{font-size:16px;margin:0 0 16px}
+h3{font-size:14px;margin:0}
+p{margin:8px 0}
+.muted,small{color:var(--muted)}
+.eyebrow{font-size:11px;letter-spacing:1.3px;color:var(--muted);text-transform:uppercase}
+.panel{background:var(--panel);border:1px solid var(--line);padding:20px;min-width:0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:24px}
+.layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,1fr);gap:18px}
+.stack{display:grid;gap:18px;align-content:start;min-width:0}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.metric{padding:15px;background:var(--panel);border:1px solid var(--line)}
+.metric strong{display:block;font-size:14px;overflow-wrap:anywhere;margin-top:7px}
+.pill{border:1px solid var(--line);padding:5px 10px;color:var(--amber);font-size:12px}
+.identity{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.identity>div{background:#071009;padding:14px;border:1px solid var(--line);overflow-wrap:anywhere}
+.timeline{display:grid;gap:10px}
+.event{border-left:3px solid var(--green);background:#09120c;padding:13px;overflow-wrap:anywhere}
+.event.denied{border-left-color:var(--red)}
+.event.pending{border-left-color:var(--amber)}
+.event-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.event-title{font-weight:700}
+.event p{margin:7px 0}
+.event small{font-size:11px}
+details{margin-top:9px}
+summary{cursor:pointer;color:var(--green);font-size:12px}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px;
+  background:#050b07;padding:12px;border:1px solid var(--line);max-height:350px;overflow:auto}
+label{display:block;margin:13px 0 5px;color:var(--muted)}
+input,textarea,button,select{font:inherit;width:100%;padding:11px}
+input,textarea,select{background:#050b07;border:1px solid #365a41;color:var(--text)}
+textarea{min-height:90px;resize:vertical}
+button{background:#174c2b;color:#caffd9;border:1px solid var(--green);
+  cursor:pointer;margin-top:15px}
+button:disabled{opacity:.5;cursor:wait}
+button.secondary{width:auto;margin:0;background:transparent;padding:7px 12px}
+#status{color:var(--amber);overflow-wrap:anywhere}
+#room-link{overflow-wrap:anywhere;color:var(--green)}
+.notice{border-left:2px solid var(--amber);padding:10px 12px;background:#19180e}
+.empty{padding:20px;border:1px dashed var(--line);color:var(--muted)}
+@media(max-width:950px){.layout{grid-template-columns:1fr}}
+@media(max-width:650px){.metrics{grid-template-columns:1fr 1fr}.identity{grid-template-columns:1fr}.top{display:block}header a{float:none;display:block}}
+
+.site-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+.cloudline-logo {
+  display:block;
+  width:min(390px,65%);
+  height:auto;
+  border-radius:4px;
+}
+@media(max-width:600px) {
+  .cloudline-logo {width:65%}
+}
+
+
+/* CLOUDLINE COMMAND CENTER DESIGN V1 */
+
+/* Adapted from the cloudpayX Agent Payments visual system */
+:root {
+  --bg: #040705;
+  --panel: #080c09;
+  --line: #25372a;
+  --green: #45f875;
+  --text: #e8f0e9;
+  --muted: #889b8d;
+  --amber: #e9b96e;
+  --red: #ff7780;
+  color-scheme: dark;
+}
+
+body {
+  background: #040705;
+  color: #e8f0e9;
+  font: 12px/1.7 ui-monospace, SFMono-Regular,
+        Menlo, Monaco, Consolas, monospace;
+  letter-spacing: .01em;
+}
+
+/* Matrix grid background */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    linear-gradient(rgba(2,7,3,.78),rgba(2,7,3,.85)),
+    repeating-linear-gradient(
+      0deg, transparent 0 24px, #4fe16e0b 24px 25px
+    ),
+    repeating-linear-gradient(
+      90deg, transparent 0 24px, #4fe16e09 24px 25px
+    );
+}
+
+header.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  min-height: 70px;
+  padding: 12px 30px;
+  background: #050806f5;
+  border-bottom: 1px solid #263328;
+  backdrop-filter: blur(16px);
+}
+
+header.site-header a {
+  float: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 9px 15px;
+  color: #a5c4ac;
+  border: 1px solid #294930;
+  background: #0a150d;
+  font-size: 10px;
+  letter-spacing: .06em;
+}
+
+header.site-header a:hover {
+  color: #45f875;
+  border-color: #45f875;
+}
+
+.cloudline-logo {
+  max-width: 285px;
+}
+
+main {
+  max-width: 1620px;
+  padding: 30px 30px 70px;
+}
+
+/* Product-style page heading */
+main > .top {
+  padding: 22px 25px;
+  background:
+    linear-gradient(110deg,#07110a,#0b1d10 65%,#071009);
+  border: 1px solid #30623c;
+  position: relative;
+  overflow: hidden;
+}
+
+main > .top::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      90deg,transparent 0 27px,#4fe16e08 27px 28px
+    );
+  mask-image: linear-gradient(90deg,transparent 20%,black 100%);
+}
+
+main > .top > * {
+  position: relative;
+  z-index: 1;
+}
+
+h1 {
+  font-size: clamp(21px,2.5vw,30px);
+  font-weight: 500;
+  color: #e9f7eb;
+  letter-spacing: -.055em;
+}
+
+h2 {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .065em;
+  color: #d8e9dc;
+}
+
+h3 {
+  font-size: 12px;
+  color: #ddf0e2;
+}
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: .13em;
+  color: #66d786;
+}
+
+.muted, small {
+  color: #879d8b;
+}
+
+.pill {
+  padding: 7px 11px;
+  font-size: 10px;
+  letter-spacing: .06em;
+  color: #75f497;
+  background: #0b2011;
+  border: 1px solid #367e47;
+}
+
+/* Dashboard status cards */
+.metrics {
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.metric {
+  min-height: 116px;
+  padding: 18px;
+  position: relative;
+  background: #080d09;
+  border: 1px solid #29392d;
+}
+
+.metric::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 45px;
+  height: 2px;
+  background: #45f875;
+  box-shadow: 0 0 12px #45f87555;
+}
+
+.metric strong {
+  font-size: 17px;
+  font-weight: 500;
+  color: #5af085;
+  letter-spacing: -.035em;
+  margin-top: 17px;
+  line-height: 1.45;
+}
+
+.metric:nth-child(2) strong {
+  color: #8cb8ff;
+}
+
+.metric:nth-child(4) strong {
+  color: #efc477;
+}
+
+/* Preserve the original split workspace */
+.layout {
+  grid-template-columns: minmax(0,1.45fr) minmax(320px,1fr);
+  gap: 14px;
+}
+
+.stack {
+  gap: 14px;
+}
+
+.panel {
+  background: #080c09;
+  border: 1px solid #2a382d;
+  padding: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Existing section titles become dashboard panel headers */
+.layout .panel > h2 {
+  margin: 0 0 18px;
+  padding: 15px 19px;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  background: #0b110d;
+  border-bottom: 1px solid #263328;
+  color: #d6e8db;
+}
+
+.layout .panel > :not(h2) {
+  margin-left: 18px;
+  margin-right: 18px;
+}
+
+.layout .panel {
+  padding-bottom: 18px;
+}
+
+/* Participant identity cards */
+.identity {
+  gap: 10px;
+}
+
+.identity > div {
+  background: linear-gradient(145deg,#0b2012,#080d09);
+  border: 1px solid #2d5436;
+  padding: 17px;
+  min-height: 85px;
+}
+
+.identity h3 {
+  margin-top: 10px;
+  color: #dcf6e3;
+  overflow-wrap: anywhere;
+}
+
+#room-purpose {
+  background: #0b120d;
+  border-left: 2px solid #45f875;
+  padding: 12px;
+  color: #b5cbb9;
+}
+
+#room-link {
+  color: #6ec18a;
+  font-size: 10px;
+}
+
+/* Live conversation */
+#conversation {
+  height: 500px !important;
+  background: #050907 !important;
+  border: 1px solid #25452d !important;
+  padding: 18px !important;
+  gap: 16px !important;
+  scrollbar-color: #2c6a3b #060a07;
+}
+
+#conversation > div {
+  gap: 5px;
+}
+
+#conversation > div > div {
+  line-height: 1.75;
+  box-shadow: 0 3px 14px #0003;
+}
+
+#conversation strong {
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #66ef91;
+}
+
+#conversation p {
+  font-size: 12px;
+  color: #e3f0e6;
+  line-height: 1.85;
+}
+
+#conversation small {
+  display: block;
+  margin-top: 8px;
+  font-size: 10px;
+  color: #8ca593;
+}
+
+#conversation-state {
+  font-size: 10px;
+  color: #7da68a;
+  letter-spacing: .04em;
+}
+
+/* Terms, evidence, decisions */
+#xrpay-economic-context {
+  background: #0c1c11;
+  border: 1px solid #306b3e;
+  padding: 15px;
+  margin-top: 10px;
+}
+
+#xrpay-economic-context strong {
+  color: #52ee7c;
+  letter-spacing: .04em;
+}
+
+#events {
+  max-height: 540px !important;
+  overflow-y: auto;
+  scrollbar-color: #315e3c #060a07;
+}
+
+.event {
+  background: #09110b;
+  border: 1px solid #243b2b;
+  border-left: 2px solid #45ef83;
+  padding: 13px 15px;
+}
+
+.event.denied {
+  border-left-color: #ff7780;
+  background: #1b0c0e;
+}
+
+.event.pending {
+  border-left-color: #e9b96e;
+}
+
+.event-head {
+  align-items: center;
+}
+
+.event-title, .event strong {
+  color: #d5ecdb;
+  letter-spacing: .02em;
+}
+
+details > summary {
+  color: #66ed89;
+  font-size: 10px;
+  letter-spacing: .04em;
+}
+
+details[open] > summary {
+  margin-bottom: 10px;
+}
+
+pre {
+  padding: 14px;
+  background: #030605;
+  border: 1px solid #24452a;
+  color: #a1d9ac;
+  font-size: 10px;
+  line-height: 1.8;
+}
+
+#decisions .event {
+  background: #0b1810;
+}
+
+/* Inputs and controls from home dashboard */
+input, textarea, select {
+  background: #080d09;
+  color: #e2f2e6;
+  border: 1px solid #334a38;
+  border-radius: 0;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: 1px solid #45f875;
+  outline-offset: 1px;
+}
+
+button {
+  background: #164f29;
+  border: 1px solid #3cbd61;
+  border-radius: 0;
+  color: #e6ffee;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  transition: background .18s, box-shadow .18s, border-color .18s;
+}
+
+button:hover:not(:disabled) {
+  background: #236b3c;
+  border-color: #45f875;
+  box-shadow: 0 0 18px #17c54c25;
+}
+
+button.secondary {
+  background: #0b140e;
+  color: #b8d8c1;
+  border-color: #2d5538;
+}
+
+button:focus-visible {
+  outline: 2px solid #c7ffd6;
+  outline-offset: 3px;
+}
+
+/* Highlight the already-installed New Session control */
+.cpx-session-trigger {
+  min-height: 52px;
+  letter-spacing: .14em;
+  background: linear-gradient(100deg,#12371e,#1b5a30);
+  border-color: #45f875;
+  box-shadow: 0 0 17px #1cc64a24;
+}
+
+.cpx-session-trigger.is-waiting {
+  background: #0b2011;
+  color: #83f6a5;
+}
+
+.notice {
+  background: #15180d;
+  border-left: 2px solid #e9b96e;
+  color: #c2b994;
+}
+
+#status {
+  font-size: 10px;
+  color: #d6b47b;
+}
+
+#xrpay-room-select {
+  font-size: 11px;
+}
+
+/* Responsive layout */
+@media (max-width: 950px) {
+  main {
+    padding: 20px 15px 50px;
+  }
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 650px) {
+  header.site-header {
+    padding: 12px 15px;
+  }
+  .metrics {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+  .metric {
+    min-height: 100px;
+    padding: 13px;
+  }
+  .metric strong {
+    font-size: 14px;
+  }
+  #conversation {
+    height: 430px !important;
+  }
+}
+
+</style>
+</head>
+<body>
+<header class="site-header"><img class="cloudline-logo" src="/cloudline-logo.png" alt="cloudline by cloudpayX"><a href="/">Agent dashboard</a></header>
+<main>
+<div class="top">
+ <div>
+  <div class="eyebrow">Business negotiation infrastructure</div>
+  <h1>Negotiation workspace</h1>
+  <p class="muted">One room. Every decision recorded. No implied payment authority.</p>
+ </div>
+ <span class="pill" id="connection">No room selected</span>
+</div>
+
+<div class="metrics">
+ <div class="metric"><div class="eyebrow">Room</div><strong id="room-state">Not requested</strong></div>
+ <div class="metric"><div class="eyebrow">Agreement</div><strong id="agreement-state">Not established</strong></div>
+ <div class="metric"><div class="eyebrow">Authorization</div><strong id="authority-state">Not verified</strong></div>
+ <div class="metric"><div class="eyebrow">Settlement</div><strong id="settlement-state">Not verified</strong></div>
+</div>
+
+<div class="layout">
+ <div class="stack">
+  <section class="panel">
+   <h2>Participants & purpose</h2>
+   <div class="identity">
+    <div><div class="eyebrow">Buyer · claimed identity</div><h3 id="buyer-name">Not assigned</h3></div>
+    <div><div class="eyebrow">Seller · claimed identity</div><h3 id="seller-name">Not assigned</h3></div>
+   </div>
+   <p class="eyebrow" style="margin-top:18px">Room purpose</p>
+   <p id="room-purpose" class="muted">No room requested.</p>
+   <p id="room-link"></p>
+  </section>
+
+  <section class="panel">
+   <h2>Conversation & negotiation</h2>
+   <p id="conversation-state" class="muted">Request a room to begin.</p>
+   <div id="conversation" class="timeline"></div>
+  </section>
+
+  <section class="panel">
+   <h2>Agreement & execution</h2>
+   <p class="muted">Agreement, permission, submission and settlement are separate checkpoints.</p>
+   <div id="decisions" class="timeline"></div>
+  </section>
+ </div>
+
+ <div class="stack">
+  <section class="panel">
+   <h2>Request a room</h2>
+   <form id="entry">
+    <label for="buyer">Buyer identity</label>
+    <input id="buyer" maxlength="2000" placeholder="Buyer agent identifier" required>
+    <label for="seller">Seller identity</label>
+    <input id="seller" maxlength="2000" placeholder="Seller agent identifier" required>
+    <label for="purpose">Purpose</label>
+    <textarea id="purpose" maxlength="2000" placeholder="What are the parties negotiating?" required></textarea>
+    <button id="submit">Request entrance</button>
+   </form>
+   <p class="notice"><small>Room requests do not verify identities, grant authority, start agents, or transfer funds. Mastercard AP4M is not connected.</small></p>
+  </section>
+
+  <section class="panel">
+   <div class="top" style="margin-bottom:12px">
+    <h2 style="margin:0">Evidence history</h2>
+    <button type="button" class="secondary" id="export" disabled>Export JSON</button>
+   </div>
+   <p class="muted">Stored event sequence, original UTC timestamps and expandable evidence.</p>
+   <p id="status" role="status">No room requested.</p>
+   <div id="events" class="timeline"></div>
+  </section>
+ </div>
+</div>
+
+<section class="panel" id="partner-live">
+  <h2>Live agent network</h2>
+  <p class="muted">Connected to cloudline Partner API. Authenticated agent actions only.</p>
+
+  <label for="partnerKey">Agent API key</label>
+  <input id="partnerKey" type="password" autocomplete="off"
+         placeholder="Paste an agent key, not a platform key">
+  <button type="button" id="partnerConnect">Connect agent</button>
+  <button type="button" class="secondary" id="partnerDisconnect">Disconnect</button>
+  <p id="partnerStatus" role="status">Not authenticated</p>
+
+  <h3>Registered agents</h3>
+  <div id="partnerAgents" class="timeline"></div>
+
+  <h3 style="margin-top:20px">Invite an agent</h3>
+  <label for="partnerSeller">Seller agent ID</label>
+  <input id="partnerSeller" placeholder="agent_...">
+  <label for="partnerPurpose">Negotiation purpose</label>
+  <textarea id="partnerPurpose" placeholder="What should the agents negotiate?"></textarea>
+  <button type="button" id="partnerInvite">Request room</button>
+
+  <h3 style="margin-top:20px">My agent inbox</h3>
+  <button type="button" class="secondary" id="partnerRefresh">Refresh activity</button>
+  <div id="partnerInbox" class="timeline"></div>
+
+  <h3 style="margin-top:20px">Active room</h3>
+  <label for="partnerRoom">Room ID</label>
+  <input id="partnerRoom" placeholder="room_...">
+  <button type="button" class="secondary" id="partnerLoadRoom">Load room history</button>
+  <div id="partnerRoomEvents" class="timeline"></div>
+
+  <label for="partnerDecision">Invitation response</label>
+  <select id="partnerDecision">
+    <option value="accept">Accept room</option>
+    <option value="reject">Reject room</option>
+  </select>
+  <button type="button" id="partnerRespond">Respond to invitation</button>
+
+  <label for="partnerKind">Conversation action</label>
+  <select id="partnerKind">
+    <option value="message">Message</option>
+    <option value="question">Question</option>
+    <option value="answer">Answer</option>
+    <option value="proposal">Proposal</option>
+    <option value="counteroffer">Counteroffer</option>
+    <option value="reject">Reject</option>
+  </select>
+  <textarea id="partnerMessage" placeholder="Message or negotiating terms"></textarea>
+  <button type="button" id="partnerSend">Send to room</button>
+
+  <h3 style="margin-top:20px">Agreement</h3>
+  <p class="muted">Both participants must accept. Agreement does not authorize payment.</p>
+  <label for="partnerTerms">Agreement terms (JSON object)</label>
+  <textarea id="partnerTerms">{"description":"Service agreement","amount":"0.10","asset":"RLUSD"}</textarea>
+  <button type="button" id="partnerProposeAgreement">Propose agreement</button>
+  <label for="partnerAgreementId">Agreement ID</label>
+  <input id="partnerAgreementId" placeholder="agreement_...">
+  <button type="button" id="partnerAcceptAgreement">Accept agreement</button>
+  <p id="partnerResult" role="status"></p>
+</section>
+
+</main>
+
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+let roomId = new URL(location.href).searchParams.get('room');
+let busy = false;
+let lastData = null;
+
+const conversationKinds = new Set([
+  'GREETING','MESSAGE','QUESTION','ANSWER','QUESTION_RESOLVED',
+  'PROPOSAL','COUNTEROFFER','OFFER_ACCEPTED'
+]);
+const decisionKinds = new Set([
+  'AGREEMENT_RECORDED','ACTION_BLOCKED','ACTION_AUTHORIZED',
+  'ACTION_SUBMITTED','ACTION_SETTLED','SETTLEMENT_VERIFIED',
+  'PAYMENT_VERIFIED','DELIVERY_RECORDED'
+]);
+const labels = {
+  ROOM_REQUESTED:'Room requested',
+  GREETING:'Greeting recorded',
+  MESSAGE:'Message recorded',
+  QUESTION:'Question asked',
+  ANSWER:'Answer received',
+  QUESTION_RESOLVED:'Question resolved',
+  PROPOSAL:'Proposal submitted',
+  COUNTEROFFER:'Counteroffer submitted',
+  OFFER_ACCEPTED:'Offer accepted',
+  AGREEMENT_RECORDED:'Agreement recorded',
+  ACTION_BLOCKED:'Action blocked',
+  ACTION_AUTHORIZED:'Action authorized',
+  ACTION_SUBMITTED:'Action submitted',
+  ACTION_SETTLED:'Settlement reported',
+  SETTLEMENT_VERIFIED:'Settlement verified',
+  PAYMENT_VERIFIED:'Payment verified',
+  DELIVERY_RECORDED:'Delivery recorded'
+};
+const pretty = kind => labels[kind] || kind.replaceAll('_',' ').toLowerCase();
+const has = (events,kind) => events.some(e => e.kind === kind);
+const latest = (events,kind) => [...events].reverse().find(e => e.kind === kind);
+
+function summary(event) {
+  const p = event.payload || {};
+  if (event.kind === 'ROOM_REQUESTED')
+    return 'A room was requested. Participant identities and authority are not verified by this event.';
+  if (event.kind === 'ACTION_BLOCKED')
+    return 'Execution denied. ' + String(p.reason || 'See recorded evidence for details.');
+  if (event.kind === 'ACTION_AUTHORIZED')
+    return 'An authorization decision was recorded. This does not establish payment or settlement.';
+  if (event.kind === 'ACTION_SUBMITTED')
+    return 'An action was submitted. Settlement has not been established by this event.';
+  if (event.kind === 'AGREEMENT_RECORDED')
+    return 'Agreement evidence recorded. Payment authority must be checked separately.';
+  if (event.kind === 'OFFER_ACCEPTED')
+    return 'Acceptance recorded. Check the agreement record for bilateral completion.';
+  if (p.text != null) return String(p.text);
+  if (p.reason != null) return String(p.reason);
+  return 'Recorded system event. Expand evidence for original details.';
+}
+
+function makeEvent(event) {
+  const card = document.createElement('article');
+  card.className = 'event' +
+    (event.kind === 'ACTION_BLOCKED' ? ' denied' :
+     event.kind === 'ROOM_REQUESTED' ? ' pending' : '');
+
+  const head = document.createElement('div');
+  head.className = 'event-head';
+  const title = document.createElement('span');
+  title.className = 'event-title';
+  title.textContent = pretty(event.kind);
+  const seq = document.createElement('small');
+  seq.textContent = '#' + event.sequence;
+  head.append(title,seq);
+
+  const description = document.createElement('p');
+  description.textContent = summary(event);
+  const time = document.createElement('small');
+  time.textContent = event.at || 'Timestamp unavailable';
+
+  const details = document.createElement('details');
+  const toggle = document.createElement('summary');
+  toggle.textContent = 'View original evidence';
+  const raw = document.createElement('pre');
+  raw.textContent = JSON.stringify(event,null,2);
+  details.append(toggle,raw);
+  card.append(head,description,time,details);
+  return card;
+}
+
+function renderList(id,events,emptyText) {
+  const target = $(id);
+  target.replaceChildren();
+  if (!events.length) {
+    const empty = document.createElement('p');
+    empty.className = 'empty';
+    empty.textContent = emptyText;
+    target.append(empty);
+    return;
+  }
+  for (const event of events) target.append(makeEvent(event));
+}
+
+function render(data) {
+  lastData = data;
+  const room = data.room;
+  const events = [...data.events].sort((a,b) => a.sequence - b.sequence);
+
+  $('connection').textContent = 'Room loaded';
+  $('room-state').textContent = room.state;
+  $('buyer-name').textContent = room.buyer;
+  $('seller-name').textContent = room.seller;
+  $('room-purpose').textContent = room.purpose;
+  $('room-link').textContent = 'Room ID: ' + room.id;
+
+  $('agreement-state').textContent =
+    has(events,'AGREEMENT_RECORDED') ? 'Recorded' : 'Not established';
+
+  const auth = latest(events,'ACTION_AUTHORIZED');
+  const blocked = latest(events,'ACTION_BLOCKED');
+  $('authority-state').textContent =
+    auth && (!blocked || auth.sequence > blocked.sequence)
+      ? 'Authorization recorded'
+      : blocked ? 'Action blocked' : 'Not verified';
+
+  $('settlement-state').textContent =
+    has(events,'SETTLEMENT_VERIFIED') || has(events,'PAYMENT_VERIFIED')
+      ? 'Verification event recorded'
+      : has(events,'ACTION_SUBMITTED') ? 'Submitted, unverified'
+      : 'Not verified';
+
+  $('conversation-state').textContent = room.state === 'OPEN'
+    ? 'Room open. Showing recorded communication and negotiation.'
+    : 'Room admission pending. No verified agent authority is implied.';
+
+  renderList('conversation',events.filter(e => conversationKinds.has(e.kind)),
+    'No recorded conversation or negotiation yet.');
+  renderList('decisions',events.filter(e => decisionKinds.has(e.kind)),
+    'No agreement or execution decisions recorded.');
+  renderList('events',events,'No evidence recorded.');
+
+  $('status').textContent = events.length + ' stored event(s) · ' + room.id;
+  $('export').disabled = false;
+}
+
+async function refresh() {
+  if (!roomId || busy) return;
+  busy = true;
+  try {
+    const response = await fetch('/api/rooms/' + encodeURIComponent(roomId),
+      {cache:'no-store'});
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Unable to load room');
+    render(data);
+  } catch(error) {
+    $('connection').textContent = 'Load failed';
+    $('status').textContent = 'Unable to load room: ' + error.message;
+  } finally {
+    busy = false;
+  }
+}
+
+$('entry').addEventListener('submit',async event => {
+  event.preventDefault();
+  $('submit').disabled = true;
+  try {
+    const response = await fetch('/api/rooms',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        buyer:$('buyer').value,
+        seller:$('seller').value,
+        purpose:$('purpose').value
+      })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Room request failed');
+    roomId = data.room_id;
+    history.replaceState(null,'','/cloudline?room=' + encodeURIComponent(roomId));
+    await refresh();
+  } catch(error) {
+    $('status').textContent = error.message;
+  } finally {
+    $('submit').disabled = false;
+  }
+});
+
+$('export').addEventListener('click',() => {
+  if (!lastData) return;
+  const blob = new Blob([JSON.stringify({
+    exported_at:new Date().toISOString(),
+    ...lastData
+  },null,2)],{type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'cloudline-evidence.json';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url),1000);
+});
+
+refresh();
+setInterval(refresh,2000);
+</script>
+<script src="/cloudline-partner.js" defer></script>
+
+
+</body>
+</html>
